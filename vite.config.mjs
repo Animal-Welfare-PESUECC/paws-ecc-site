@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import YAML from 'yaml';
+import glob from 'fast-glob';
 import { processImages } from './src/image-preprocess.mjs';
 
 dotenv.config();
@@ -151,16 +152,6 @@ const py_build_plugin = () => {
 
   return {
     name: 'builder-ssg',
-    buildStart() {
-      console.log('Generating static files...');
-      try {
-        const output = execSync(`${pythonExecutable} src/main.py`);
-        console.log(output.toString().trim());
-      } catch (e) {
-        console.error('Failed to generate static files:', e);
-        throw e;
-      }
-    },
     closeBundle() {
       console.log('Cleaning up root directory...');
       try {
@@ -226,28 +217,46 @@ const py_build_plugin = () => {
   };
 };
 
-export default defineConfig({
-  plugins: [
-    py_build_plugin(),
-    tailwindcss(),
-  ],
-  build: {
-    outDir: './dist',
-  },
-  server: {
-    watch: {
-      ignored: [
-        '**/assets/css/generated.daisyui.css',
-        '**/assets/css/generated.fonts.css',
-        '**/assets/css/syntax.css',
-        '**/.venv/**',
-        '**/dist/**',
-        '**/index.html',
-        '**/sitemap.xml',
-        '**/blog/**',
-        '**/posts/**',
-        '**/tags/**'
-      ]
+export default defineConfig(({ command }) => {
+  if (command === 'build') {
+    console.log('Buiding static pages for production');
+    try {
+      const output = execSync(`${pythonExecutable} src/main.py`);
+      console.log(output.toString().trim());
+    } catch (e) {
+      console.error('Failed to generate static files:', e);
+      throw e;
     }
   }
+
+  const inputFiles = glob.sync(['**/*.html', '!dist/**', '!node_modules/**', '!**/.venv/**', '!templates/**']);
+
+  return {
+    plugins: [
+      py_build_plugin(),
+      tailwindcss(),
+    ],
+    build: {
+      outDir: './dist',
+      rollupOptions: {
+        input: inputFiles,
+      },
+    },
+    server: {
+      watch: {
+        ignored: [
+          '**/assets/css/generated.daisyui.css',
+          '**/assets/css/generated.fonts.css',
+          '**/assets/css/syntax.css',
+          '**/.venv/**',
+          '**/dist/**',
+          '**/index.html',
+          '**/sitemap.xml',
+          '**/blog/**',
+          '**/posts/**',
+          '**/tags/**'
+        ]
+      }
+    }
+  };
 });
