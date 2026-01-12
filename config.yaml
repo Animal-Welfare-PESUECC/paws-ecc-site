@@ -52,6 +52,18 @@ fonts:
 syntax:
   pygments_theme: "dracula"
 
+markdown:
+  extensions:
+    - fenced_code
+    - codehilite
+    - footnotes
+    - tables
+    - attr_list
+    - sane_lists
+    - md_in_html
+    - toc:
+        permalink: true
+
 navigation:
   - name: "Home"
     url: "/"

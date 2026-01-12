@@ -429,7 +429,11 @@ MARKDOWN_EXTENSIONS = [
     TocExtension(permalink=True),
 ]
 
-def build_markdown(pygments_theme):
+def build_markdown(pygments_theme, markdown_config=None):
+    if markdown_config is None:
+        markdown_config = {}
+
+    extensions = []
     extension_configs = {
         "codehilite": {
             "guess_lang": False,
@@ -437,8 +441,43 @@ def build_markdown(pygments_theme):
             "pygments_style": pygments_theme,
         }
     }
+
+    config_extensions = markdown_config.get("extensions")
+    
+    # Fallback to default if not configured or empty
+    if not config_extensions:
+        # Replicate the previous default list
+        # "fenced_code", "codehilite", "footnotes", "tables", "attr_list", "sane_lists", "md_in_html", toc
+        extensions = [
+            "fenced_code",
+            "codehilite",
+            "footnotes",
+            "tables",
+            "attr_list",
+            "sane_lists",
+            "md_in_html",
+            "toc"
+        ]
+        extension_configs["toc"] = {"permalink": True}
+    else:
+        for ext in config_extensions:
+            if isinstance(ext, str):
+                extensions.append(ext)
+            elif isinstance(ext, dict):
+                for name, config in ext.items():
+                    extensions.append(name)
+                    if config:
+                        # If the extension is codehilite, we need to merge with existing pygments config
+                        if name == "codehilite":
+                            current_conf = extension_configs.get("codehilite", {})
+                            current_conf.update(config)
+                            extension_configs["codehilite"] = current_conf
+                        else:
+                            extension_configs[name] = config
+
+    
     return markdown.Markdown(
-        extensions=MARKDOWN_EXTENSIONS, extension_configs=extension_configs
+        extensions=extensions, extension_configs=extension_configs
     )
 
 
@@ -459,7 +498,7 @@ def load_templates(env, template_dir=TEMPLATE_DIR, allowed_extensions=(".html", 
     return templates
 
 
-def parse_file(filepath, pygments_theme):
+def parse_file(filepath, pygments_theme, markdown_config=None):
     try:
         with open(filepath, "r", encoding="utf-8") as f:
             file_content = f.read()
@@ -480,7 +519,7 @@ def parse_file(filepath, pygments_theme):
         page_config = {}
         markdown_data = file_content
 
-    md = build_markdown(pygments_theme)
+    md = build_markdown(pygments_theme, markdown_config)
     html_data = md.convert(markdown_data)
     md.reset()
 
@@ -782,7 +821,9 @@ def main():
                 f"No changes detected in {args.file} based on cache; rebuilding anyway."
             )
 
-        page_data, html_content = parse_file(args.file, pygments_theme)
+        page_data, html_content = parse_file(
+            args.file, pygments_theme, site_config.get("markdown")
+        )
         if page_data is None or html_content is None:
             return
         render_page(
@@ -807,7 +848,9 @@ def main():
         for filename in os.listdir(CONTENT_DIR):
             if filename.endswith(".md"):
                 filepath = os.path.join(CONTENT_DIR, filename)
-                page_data, html_content = parse_file(filepath, pygments_theme)
+                page_data, html_content = parse_file(
+                    filepath, pygments_theme, site_config.get("markdown")
+                )
                 if not page_data:
                     continue
                 if str(page_data.get("draft")).lower() in ("true", "1", "yes"):
@@ -821,7 +864,9 @@ def main():
             for filename in os.listdir(POSTS_DIR):
                 if filename.endswith(".md"):
                     filepath = os.path.join(POSTS_DIR, filename)
-                    page_data, html_content = parse_file(filepath, pygments_theme)
+                    page_data, html_content = parse_file(
+                        filepath, pygments_theme, site_config.get("markdown")
+                    )
                     if not page_data:
                         continue
                     if str(page_data.get("draft")).lower() in ("true", "1", "yes"):
