@@ -3,10 +3,11 @@ author: "PAWS ECC"
 base_url: "pawsecc.com"
 
 theme:
-  default: "hacktoberfest25"
+  default: "lemonade"
   include:
     - "hacktoberfest25"
     - "dracula"
+    - "lemonade"
   custom:
     hacktoberfest25: |
       /* Raw CSS Theme */
