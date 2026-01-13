@@ -44,7 +44,7 @@ def load_previous_slugs():
 
 def save_current_slugs(slugs):
     os.makedirs(os.path.dirname(PAGE_SLUG_CACHE), exist_ok=True)
-    with open(PAGE_SLUG_CACHE, "w") as f:
+    with open(PAGE_SLUG_CACHE, "w", encoding="utf-8") as f:
         json.dump(sorted(slugs), f)
 
 
@@ -105,12 +105,12 @@ def has_file_changed(filepath, cache_dir=".cache"):
     cache_file = os.path.join(cache_dir, safe_name)
 
     if os.path.exists(cache_file):
-        with open(cache_file, "r") as f:
+        with open(cache_file, "r", encoding="utf-8") as f:
             cached_hash = f.read().strip()
         if cached_hash == file_hash:
             return False
 
-    with open(cache_file, "w") as f:
+    with open(cache_file, "w", encoding="utf-8") as f:
         f.write(file_hash)
     return True
 
@@ -589,7 +589,7 @@ def tag_pages(tag_template, site_config, tags=None, image_manifest=None):
         )
         tag_page_html = replace_images_with_processed(tag_page_html, image_manifest)
         output_path = os.path.join(tags_dir, f"{tag_name}.html")
-        with open(output_path, "w") as f:
+        with open(output_path, "w", encoding="utf-8") as f:
             f.write(tag_page_html)
         print(f"Generated tag page: tags/{tag_name}.html")
 
@@ -633,7 +633,7 @@ def render_page(
         )
 
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    with open(output_path, "w") as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         f.write(final_html)
     print(
         f"Generated: {page_config['url'] if page_config['url'] != '/' else '/index.html'}"
