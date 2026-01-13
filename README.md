@@ -21,7 +21,16 @@ mettu (మెట్లు, /ˈmɛt.t̪u/) is a simple static site generator that
 
    - Note: Python dependencies are installed by default by the initialising script.
 
-3. Edit the `config.yaml` file to set your site name, author, runtime configuration, navigation links, syntax highlighting theme, and DaisyUI theme preferences.
+3. Configure Environment Variables (Optional - for S3 Upload)
+
+   Copy the example environment file:
+   ```bash
+   cp .env.example .env
+   ```
+
+   Edit `.env` to add your S3 bucket credentials. This is required if you want optimized images to be uploaded to an S3-compatible bucket.
+
+4. Edit the `config.yaml` file to set your site name, author, runtime configuration, navigation links, syntax highlighting theme, and DaisyUI theme preferences.
 
    ```yaml
    runtime:
@@ -34,6 +43,11 @@ mettu (మెట్లు, /ˈmɛt.t̪u/) is a simple static site generator that
          primary: "#570df8"
          secondary: "#f000b8"
          accent: "#37cdbe"
+   
+   images:
+     formats:
+       - webp
+       - jpg
    ```
 
     Optionally, define site-wide font imports and the families to apply:
@@ -53,16 +67,23 @@ mettu (మెట్లు, /ˈmɛt.t̪u/) is a simple static site generator that
 
    You can still override the interpreter via the `PY_EXECUTABLE` environment variable if needed, but the config file is the canonical source.
 
-4. Create markdown files in the `content` directory. Each file should start similarly to the given examples.
-5. Templates and svg icons are located in the `templates` directory. You can customize them as needed.
-6. Assets like css, images, etc are placed in the `assets` directory.
-7. Run the development server
+5. Create markdown files in the `content` directory.
+   - **Dynamic Routing**: Nested directories are supported (e.g., `content/blog/post-1.md` becomes `/blog/post-1.html`).
+   - Each file should start with frontmatter similarly to the given examples.
+
+6. Templates and svg icons are located in the `templates` directory. You can customize them as needed.
+
+7. Assets like css, images, etc are placed in the `assets` directory.
+   - **Image Optimization**: Images in `assets/img` are automatically processed and converted to WebP.
+   - **S3 Upload**: If configured in `.env`, processed images are uploaded to the specified S3 bucket.
+
+8. Run the development server
 
    ```bash
    npm run dev
    ```
 
-8. Build the site for production
+9. Build the site for production
 
    ```bash
    npm run build
