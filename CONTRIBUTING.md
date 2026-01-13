@@ -2,7 +2,7 @@
 
 Welcome to the PAWS ECC website project! We welcome contributions from members and volunteers. This guide will help you set up the project locally and add content.
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - **Node.js**: Install from [nodejs.org](https://nodejs.org/) (v16+ recommended).
@@ -31,7 +31,7 @@ Welcome to the PAWS ECC website project! We welcome contributions from members a
 
 ---
 
-## 📝 Adding Content
+## Adding Content
 
 ### 1. Adding a Team Member
 Team members are stored as individual files in `content/team/`.
