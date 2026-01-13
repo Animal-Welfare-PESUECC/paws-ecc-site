@@ -5,6 +5,8 @@ base_url: "pawsecc.com"
 theme:
   default: "lemonade"
   include:
+    - "abyss"
+    - "lemonade"
     - "hacktoberfest25"
     - "dracula"
     - "lemonade"

@@ -182,6 +182,7 @@ def normalize_theme_config(config):
 
 def write_theme_file(config, output_path=GENERATED_THEME_PATH):
     theme = config.get("theme") or {}
+    print(f"DEBUG: write_theme_file theme config: {theme}")
     include = theme.get("include") or []
     include_list = _ensure_sequence(include)
 
@@ -196,8 +197,8 @@ def write_theme_file(config, output_path=GENERATED_THEME_PATH):
 
     css_blocks = []
     if names:
-        joined_names = ", ".join(json.dumps(name) for name in names)
-        css_blocks.append(f'@plugin "daisyui" {{\n  themes: ({joined_names});\n}}')
+        joined_names = ", ".join(names)
+        css_blocks.append(f'@plugin "daisyui" {{\n  themes: {joined_names};\n}}')
     else:
         css_blocks.append('@plugin "daisyui" {\n  themes: all;\n}')
 
