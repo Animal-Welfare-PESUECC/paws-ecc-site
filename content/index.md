@@ -3,7 +3,7 @@ layout: main
 title: PAWS PESUECC
 hero_title: PAWS PESUECC
 hero_subtitle: Dedicated to the welfare of our campus friends. We feed, vaccinate, and love.
-hero_image: "https://placedog.net/1200/600?id=42"
+hero_image: "/assets/images/main_page.jpg"
 social_links:
   - name: Instagram
     url: https://www.instagram.com/paws_pesecc/

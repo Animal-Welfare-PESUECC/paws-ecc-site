@@ -13,3 +13,7 @@
 .venv
 dist
 .venv/*
+
+!/assets/images/paws_logo.png
+
+!/assets/images/main_page.jpg
