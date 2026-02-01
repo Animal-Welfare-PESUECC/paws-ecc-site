@@ -68,3 +68,42 @@ if __name__ == "__main__":
         clean_gallery_dir()
     
     download_images()
+    
+    print("Processing images into thumbnails...")
+    try:
+        from PIL import Image
+        
+        for filename in os.listdir(GALLERY_DIR):
+            if filename.endswith("_thumb.webp"):
+                continue
+                
+            file_path = os.path.join(GALLERY_DIR, filename)
+            if not os.path.isfile(file_path):
+                continue
+                
+            try:
+                # distinct styling for thumbnails
+                base_name = os.path.splitext(filename)[0]
+                thumb_name = f"{base_name}_thumb.webp"
+                thumb_path = os.path.join(GALLERY_DIR, thumb_name)
+                
+                # specific optimization
+                with Image.open(file_path) as img:
+                    # Convert to RGB if necessary (e.g. for PNGs with alpha)
+                    if img.mode in ("RGBA", "P"):
+                        img = img.convert("RGB")
+                    
+                    # Resize to max width 600px
+                    max_width = 800
+                    if img.width > max_width:
+                        ratio = max_width / img.width
+                        new_height = int(img.height * ratio)
+                        img = img.resize((max_width, new_height), Image.Resampling.LANCZOS)
+                    
+                    img.save(thumb_path, "WEBP", quality=60)
+                    print(f"Generated thumbnail: {thumb_name}")
+            except Exception as e:
+                print(f"Failed to process {filename}: {e}")
+                
+    except ImportError:
+        print("Pillow not installed, skipping thumbnail generation. Please install Pillow.")

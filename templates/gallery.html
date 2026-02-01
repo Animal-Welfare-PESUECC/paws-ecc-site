@@ -14,8 +14,10 @@
         {% for image in display_images %}
         <div
             class="break-inside-avoid rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-shadow duration-300">
-            <img src="{{ image.src }}" alt="{{ image.alt }}"
-                class="w-full h-auto object-cover hover:scale-105 transition-transform duration-500">
+            <a href="{{ image.full_src }}" target="_blank">
+                <img src="{{ image.src }}" alt="{{ image.alt }}" loading="lazy"
+                    class="w-full h-auto object-cover hover:scale-105 transition-transform duration-500">
+            </a>
             {% if image.caption %}
             <div class="p-2 bg-base-200 text-sm text-center">
                 {{ image.caption }}

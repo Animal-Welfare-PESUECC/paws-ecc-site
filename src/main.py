@@ -826,21 +826,27 @@ def get_gallery_images(image_manifest=None):
     
     # We want a predictable sort order
     for filename in sorted(os.listdir(gallery_dir)):
+        if filename.endswith("_thumb.webp"):
+            continue
+            
         if filename.lower().endswith(supported_exts):
             # Construct src path relative to site root
-            src = f"/assets/images/gallery/{filename}"
+            full_src = f"/assets/images/gallery/{filename}"
+            
+            # Check for thumbnail
+            base, ext = os.path.splitext(filename)
+            thumb_name = f"{base}_thumb.webp"
+            if os.path.exists(os.path.join(gallery_dir, thumb_name)):
+                src = f"/assets/images/gallery/{thumb_name}"
+            else:
+                src = full_src
             
             # Simple caption from filename: "dog_playing.jpg" -> "dog playing"
             caption = os.path.splitext(filename)[0].replace("_", " ").replace("-", " ")
             
-            # We can try to use manifest to get optimized src if available
-            # But the 'src' in <img> tag will be replaced by ImageReplacementParser later
-            # IF we use the replace_images_with_processed on the output.
-            # However, for the gallery loop, we might want to pass the raw struct
-            # and let the template render <img> which gets processed.
-            
             images.append({
                 "src": src,
+                "full_src": full_src,
                 "alt": caption,
                 "caption": caption
             })

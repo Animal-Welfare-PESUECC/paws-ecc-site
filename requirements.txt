@@ -5,3 +5,4 @@ Pygments
 python-dotenv
 gdown
 tqdm
+Pillow
